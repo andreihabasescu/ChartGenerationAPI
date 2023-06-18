@@ -168,20 +168,19 @@
         fwrite($myfile,$content);
         fclose($myfile);
 
+        return $content;
     }
 
     function buildChart($postID,$userID) {
-        $myfile = fopen($_SERVER['DOCUMENT_ROOT'].'/WebProject23/output/'.$postID.'_'.$userID.'.json', "r");
+            $str = createJson($postID,$userID);//file_get_contents($_SERVER['DOCUMENT_ROOT'].'/ChartGenerationAPI/output/'.$postID.'_'.$userID.'.json',true);
 
-        $str = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/WebProject23/output/'.$postID.'_'.$userID.'.json',true);
+            list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$str);
 
-        list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$str);
+            $genderData = json_decode($genderJson);
+            $ageData = json_decode($ageJson);
+            $emotionData = json_decode($emotionJson);
+            $timeData = json_decode($timeJson);
 
-        $genderData = json_decode($genderJson);
-        $ageData = json_decode($ageJson);
-        $emotionData = json_decode($emotionJson);
-        $timeData = json_decode($timeJson);
-
-        require 'chart-view.php';
+            require 'chart-view.php';
     }
 ?>
