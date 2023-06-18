@@ -62,7 +62,7 @@
             date_default_timezone_set('Europe/Bucharest');
             $set_date = date('Y-m-d H:i:s');
 
-            $queryTime = "SELECT TIMESTAMPDIFF(MINUTE, time_of_submit, timestamp($set_date)) AS time_difference FROM response WHERE id_post = $postId";
+            $queryTime = "SELECT TIMESTAMPDIFF(MINUTE, time_of_submit, timestamp(\"$set_date\")) AS time_difference FROM response WHERE id_post = \"$postId\"";
             $resultTime = $mysql->query($queryTime);
 
             $timeInterval = 60; //representing 60 minutes
