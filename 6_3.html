@@ -1,6 +1,3 @@
-<?php
-    ob_start();
-?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,10 +58,10 @@
     var emotionCtx = document.getElementById('EmotionChart').getContext('2d');
     var timeCtx = document.getElementById('TimeChart').getContext('2d');
   
-    var genderData = <?php echo json_encode($genderData); ?>;
-    var ageData = <?php echo json_encode($ageData); ?>;
-    var emotionData = <?php echo json_encode($emotionData); ?>;
-    var timeData = <?php echo json_encode($timeData); ?>;
+    var genderData = [["Male","5"],["Female","1"]];
+    var ageData = [["Children","1"],["Teens","0"],["Young Adults","5"],["Adults","0"],["Seniors","0"]];
+    var emotionData = {"labels":["anger","anticipation","disgust","fear","joy","sadness","surprise","trust"],"datasets":[{"label":"Not really","data":[0,2,0,2,3,0,2,3],"backgroundColor":"#51EAEA"},{"label":"Yes","data":[0,0,0,2,3,0,3,3],"backgroundColor":"#FCDDB0"},{"label":"Very much","data":[0,1,0,0,1,0,1,1],"backgroundColor":"#FF9D76"}]};
+    var timeData = {"labels":[6,12,18,24,30,36,42,48,54,60],"datasets":[4,0,0,1,0,0,0,0,1,0],"label":54};
     console.log(emotionData);
     var genderChart = new Chart(genderCtx, {
         type: 'pie',
@@ -137,7 +134,3 @@
 </body>
 </html>
 
-<?php
-    $content = ob_get_clean();
-    if(!file_put_contents(__DIR__.'/'.$postID.'_'.$userID.'.html', $content)) echo 'Unable to save: '.$postID.'_'.$userID;
-?>

@@ -206,12 +206,17 @@
         $timeData = json_decode($timeJson);
 
         require 'chart-view.php';
+
+        $path = __DIR__.'/'.$postID.'_'.$userID.'.zip';
+        return $path;
     }
 
     $postID = $_GET['postID'];
     $userID = $_GET['userID'];
 
-    buildChart($postID,$userID);
+    $link = buildChart($postID,$userID);
+    $arr = array('link' => $link);
 
-    echo "success_123";
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($arr);
 ?>
