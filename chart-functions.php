@@ -171,17 +171,20 @@
         return $content;
     }
 
-    function buildChart($postID,$userID) {
-            $str = createJson($postID,$userID);//file_get_contents($_SERVER['DOCUMENT_ROOT'].'/ChartGenerationAPI/output/'.$postID.'_'.$userID.'.json',true);
+    function buildChart() {
+        $postID = $_GET['postID'];
+        $userID = $_GET['userID'];
 
-            list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$str);
+        $str = createJson($postID,$userID);//file_get_contents($_SERVER['DOCUMENT_ROOT'].'/ChartGenerationAPI/output/'.$postID.'_'.$userID.'.json',true);
 
-            $genderData = json_decode($genderJson);
-            $ageData = json_decode($ageJson);
-            $emotionData = json_decode($emotionJson);
-            $timeData = json_decode($timeJson);
+        list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$str);
 
-            require 'chart-view.php';
+        $genderData = json_decode($genderJson);
+        $ageData = json_decode($ageJson);
+        $emotionData = json_decode($emotionJson);
+        $timeData = json_decode($timeJson);
+
+        require 'chart-view.php';
     }
 
 
