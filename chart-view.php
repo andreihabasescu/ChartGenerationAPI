@@ -62,10 +62,10 @@
     var emotionCtx = document.getElementById('EmotionChart').getContext('2d');
     var timeCtx = document.getElementById('TimeChart').getContext('2d');
   
-    var genderData = <?php echo json_encode($chartDataGender); ?>;
-    var ageData = <?php echo json_encode($chartDataAge); ?>;
-    var emotionData = <?php echo json_encode($chartDataEmotions); ?>;
-    var timeData = <?php echo json_encode($chartDataTime); ?>;
+    var genderData = <?php echo json_encode($genderData); ?>;
+    var ageData = <?php echo json_encode($ageData); ?>;
+    var emotionData = <?php echo json_encode($emotionData); ?>;
+    var timeData = <?php echo json_encode($timeData); ?>;
     console.log(emotionData);
     var genderChart = new Chart(genderCtx, {
         type: 'pie',
