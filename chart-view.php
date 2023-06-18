@@ -27,7 +27,7 @@
         }
         .chart-container-emotions {
             width: 500px;
-            height: 500px;
+            height: auto;
             margin: 0 auto 20px;
         }
         
@@ -139,5 +139,5 @@
 
 <?php
     $content = ob_get_clean();
-    if(!file_put_contents(__DIR__.'/'.$postID.'_'.$userID.'.html', $content)) echo 'Unable to save: '.$postID.'_'.$userID;
+    if(!file_put_contents(__DIR__.'/output/'.$postID.'_'.$userID.'.html', $content)) echo 'Unable to save: '.$postID.'_'.$userID;
 ?>

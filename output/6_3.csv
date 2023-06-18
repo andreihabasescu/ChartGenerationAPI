@@ -1,0 +1,4 @@
+"[[""Male"",""5""],[""Female"",""1""]]"
+"[[""Children"",""1""],[""Teens"",""0""],[""Young Adults"",""5""],[""Adults"",""0""],[""Seniors"",""0""]]"
+"{""labels"":[""anger"",""anticipation"",""disgust"",""fear"",""joy"",""sadness"",""surprise"",""trust""],""datasets"":[{""label"":""Not really"",""data"":[0,2,0,2,3,0,2,3],""backgroundColor"":""#51EAEA""},{""label"":""Yes"",""data"":[0,0,0,2,3,0,3,2],""backgroundColor"":""#FCDDB0""},{""label"":""Very much"",""data"":[0,0,0,0,0,0,1,1],""backgroundColor"":""#FF9D76""}]}"
+"{""labels"":[6,12,18,24,30,36,42,48,54,60],""datasets"":[4,0,0,1,0,0,0,0,1,0],""label"":54}"

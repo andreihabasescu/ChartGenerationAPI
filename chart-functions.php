@@ -51,7 +51,7 @@
            $seniorCount = $rowSeniors['senior_count'];
        
            //FOR EMOTIONS
-           $queryEmotions = "SELECT anger, anticipation, disgust, fear, joy, sadness, surprise, trust FROM response;";
+           $queryEmotions = "SELECT anger, anticipation, disgust, fear, joy, sadness, surprise, trust FROM response where id_post=$postId;";
            $resultEmotions = $mysql->query($queryEmotions);
            
            $emotions = ['anger', 'anticipation', 'disgust', 'fear', 'joy', 'sadness', 'surprise', 'trust'];
@@ -152,24 +152,6 @@
     
         $chartDataEmotions['datasets'][] = $dataset;
         }
-
-        /*
-        while ($row = $resultTime->fetch_assoc()) {
-            //var_dump($row);
-            $timeDifference = $row['time_difference'];
-            foreach ($intervals as $interval) {
-                //var_dump($interval);
-                if (intval($timeDifference) <= $interval && intval($timeDifference) > $interval - 5) {
-                    //var_dump($interval);
-                    if (!isset($chartDataTime['datasets'][$interval])) {
-                        $chartDataTime['datasets'][$interval] = 1;
-                    } else {
-                        $chartDataTime['datasets'][$interval]++;
-                    }
-                }
-            }
-        }   
-        */
         
         while($row = $resultTime->fetch_assoc()){
             $timeDifference = $row['time_difference'];
@@ -187,16 +169,49 @@
         $emotionJson = json_encode($chartDataEmotions);
         $timeJson = json_encode($chartDataTime);
 
-        $myfile = fopen($_SERVER['DOCUMENT_ROOT'].'/WebProject23/output/'.$postId.'_'.$userID.'.json', "w");
-        $content = $genderJson.'%%%'.$ageJson.'%%%'.$emotionJson.'%%%'.$timeJson;
+        $myfile = fopen($_SERVER['DOCUMENT_ROOT'].'/ChartGenerationAPI/output/'.$postId.'_'.$userID.'.json', "w");
+        $content = '['.$genderJson.','.$ageJson.','.$emotionJson.','.$timeJson.']';
+        $ret = $genderJson.'%%%'.$ageJson.'%%%'.$emotionJson.'%%%'.$timeJson; //return data for Chart Generation
         fwrite($myfile,$content);
         fclose($myfile);
 
-        return $content;
+        return $ret;
+    }
+
+    function buildCSV($json,$postID,$userID) {
+        list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$json);
+        $arr = array();
+        array_push($arr,$genderJson);
+        array_push($arr,$ageJson);
+        array_push($arr,$emotionJson);
+        array_push($arr,$timeJson);
+        
+        $csv = 'output/'.$postID.'_'.$userID.'.csv';
+    
+        $file_pointer = fopen($csv, 'w');
+
+        foreach($arr as $jsn) {
+            $jsonans = json_decode($jsn, true);
+            //var_dump($jsonans);
+            if (is_array($jsn)) {
+                foreach($jsonans as $i) {            
+                    fputcsv($file_pointer, $i);
+                }
+            } else {
+                echo('ERRRRRRRR HERRR '.$jsn);
+                $arr1 = array($jsn);
+                fputcsv($file_pointer, $arr1);
+            }
+        }
+        
+        fclose($file_pointer);
+
     }
 
     function buildChart($postID,$userID) {
-        $str = createJson($postID,$userID);//file_get_contents($_SERVER['DOCUMENT_ROOT'].'/ChartGenerationAPI/output/'.$postID.'_'.$userID.'.json',true);
+        $str = createJson($postID,$userID);
+
+        buildCSV($str,$postID,$userID);
 
         list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$str);
 
@@ -207,16 +222,42 @@
 
         require 'chart-view.php';
 
-        $path = __DIR__.'/'.$postID.'_'.$userID.'.zip';
+        $path = $postID.'_'.$userID;
         return $path;
+    }
+
+    function buildZip($fileName) {
+        $zip = new ZipArchive();
+        $path = 'compressed/'.$fileName.'.zip';
+
+        $link = "error_creating_zip";
+
+        if ($zip->open($path, ZipArchive::CREATE)) {
+            $zip->addFile('output/'.$fileName.'.html',$fileName.'.html');
+            $zip->addFile('output/'.$fileName.'.json',$fileName.'.json');
+            $zip->close();
+
+            $link = __DIR__.'/compressed/'.$fileName.'.zip';
+        } 
+
+        return $link;
     }
 
     $postID = $_GET['postID'];
     $userID = $_GET['userID'];
 
-    $link = buildChart($postID,$userID);
-    $arr = array('link' => $link);
+    if ($postID=="" || $userID=="") {
+        $ret = "error: you must log in to access the API";
 
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($arr);
+        $arr = array('response' => $ret);
+        echo json_encode($arr);
+    } else {
+        $json_data = buildChart($postID,$userID);
+        $link = buildZip($json_data);
+
+        $arr = array('link' => $link);
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($arr);
+    }
 ?>
