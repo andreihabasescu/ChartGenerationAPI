@@ -58,6 +58,20 @@
            $intensities = [1,2,3];
            $data = [];
 
+            //FOR TIME
+            $set_date = date('Y-m-d H:i:s', strtotime('2023-06-14 23:00:00'));
+
+            $queryTime = "SELECT (-1)*TIMESTAMPDIFF(MINUTE, date, CONCAT(DATE(date), ' 23:00:00')) AS time_difference FROM response WHERE id_post = $postId";
+            $resultTime = $mysql->query($queryTime);
+
+            $timeInterval = 60; //representing 60 minutes
+            $step = 5; //cat dureaza un interval
+            $intervals = [];
+
+            for($i = $step; $i <= $timeInterval; $i += $step){
+                $intervals[] =  $i;
+            }
+
            while($row = $resultEmotions->fetch_assoc()){
             foreach($emotions as $emotion){
                 foreach($intensities as $intensity){
@@ -75,20 +89,6 @@
                 }
             }
         }
-
-         //FOR TIME
-            $set_date = date('Y-m-d H:i:s', strtotime('2023-06-14 23:00:00'));
-
-            $queryTime = "SELECT (-1)*TIMESTAMPDIFF(MINUTE, date, CONCAT(DATE(date), ' 23:00:00')) AS time_difference FROM response WHERE id_post = 4;";
-            $resultTime = $mysql->query($queryTime);
-
-            $timeInterval = 60; //representing 60 minutes
-            $step = 5; //cat dureaza un interval
-            $intervals = [];
-
-            for($i = $step; $i <= $timeInterval; $i += $step){
-                $intervals[] =  $i;
-            }
 
         $chartDataGender = [
           ['Male', $maleCount],
