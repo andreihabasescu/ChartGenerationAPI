@@ -62,14 +62,23 @@
             date_default_timezone_set('Europe/Bucharest');
             $set_date = date('Y-m-d H:i:s');
 
-            $queryTime = "SELECT TIMESTAMPDIFF(MINUTE, time_of_submit, timestamp(\"$set_date\")) AS time_difference FROM response WHERE id_post = \"$postId\"";
+            $queryTime = "SELECT TIMESTAMPDIFF(MINUTE, p.start_date, r.time_of_submit) AS time_difference
+            FROM posts_table p
+            JOIN response r ON p.id_post = r.id_post where p.id_post = $postId;";
             $resultTime = $mysql->query($queryTime);
+            
+            $queryTimeFromUser = "SELECT (-1)*TIMESTAMPDIFF(MINUTE, end_date, start_date) AS this FROM posts_table WHERE id_post = $postId;";
+            $resultTimeFromUser = $mysql->query($queryTimeFromUser);
+            
+            $aux = $resultTimeFromUser->fetch_assoc();
+            $TotalInterval = intval($aux["this"]);
+            //var_dump($TotalInterval);
 
-            $timeInterval = 60; //representing 60 minutes
-            $step = 5; //cat dureaza un interval
+            $step = intval($TotalInterval / 10); //representing 60 minutes
             $intervals = [];
 
-            for($i = $step; $i <= $timeInterval; $i += $step){
+            for($i = $step; $i < $TotalInterval; $i += $step){
+                //var_dump($i);
                 $intervals[] =  $i;
             }
 
@@ -110,8 +119,8 @@
         ];
 
         $chartDataTime = [
-            'labels' => [],
-            'datasets' => [],
+            'labels' => $intervals,
+            'datasets' => [0,0,0,0,0,0,0,0,0,0]
         ];
 
         foreach($intensities as $intensity){
@@ -144,9 +153,12 @@
         $chartDataEmotions['datasets'][] = $dataset;
         }
 
+        /*
         while ($row = $resultTime->fetch_assoc()) {
+            //var_dump($row);
             $timeDifference = $row['time_difference'];
             foreach ($intervals as $interval) {
+                //var_dump($interval);
                 if (intval($timeDifference) <= $interval && intval($timeDifference) > $interval - 5) {
                     //var_dump($interval);
                     if (!isset($chartDataTime['datasets'][$interval])) {
@@ -156,8 +168,19 @@
                     }
                 }
             }
+        }   
+        */
+        
+        while($row = $resultTime->fetch_assoc()){
+            $timeDifference = $row['time_difference'];
+            foreach($intervals as $interval){
+                $chartDataTime['label'] = $interval;
+                if ((intval($timeDifference) > $interval - $step) && (intval($timeDifference) <= $interval)){
+                    $chartDataTime['datasets'][floor($interval/$step)-1]++;
+                    break;
+                }
+           }
         }
-
 
         $genderJson = json_encode($chartDataGender);
         $ageJson = json_encode($chartDataAge);
