@@ -131,6 +131,7 @@
         options: {
             // Customize chart options as needed
         }
+    });
   
 </script>
 
