@@ -183,4 +183,7 @@
 
             require 'chart-view.php';
     }
+
+
+    buildChart($postID,$userID);
 ?>
