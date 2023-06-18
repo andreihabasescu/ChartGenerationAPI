@@ -59,9 +59,9 @@
            $data = [];
 
             //FOR TIME
-            $set_date = date('Y-m-d H:i:s', strtotime('2023-06-14 23:00:00'));
+            $set_date = date('Y-m-d H:i:s');
 
-            $queryTime = "SELECT (-1)*TIMESTAMPDIFF(MINUTE, date, CONCAT(DATE(date), ' 23:00:00')) AS time_difference FROM response WHERE id_post = $postId";
+            $queryTime = "SELECT (-1)*TIMESTAMPDIFF(MINUTE, date, DATE($set_date)) AS time_difference FROM response WHERE id_post = $postId";
             $resultTime = $mysql->query($queryTime);
 
             $timeInterval = 60; //representing 60 minutes
