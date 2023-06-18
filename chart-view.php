@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chart Example</title>
+    <title>Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         html, body {
@@ -35,6 +35,9 @@
     </style>
 </head>
 <body>
+<div>
+    <p>The statistic based on the answers to your post:</p>
+</div>
 <div class="chart-container-gender">
     <p>Gender comparison graph based on the answers:</p>
     <canvas id="GenderChart"></canvas>
@@ -47,16 +50,22 @@
     <p>Emotions distribution graph based on the answers:</p>
     <canvas id="EmotionChart"></canvas>
 </div>
+<div class = "chart-container-age">
+    <p>Time distribution based on answers:</p>
+    <canvas id="TimeChart"></canvas>
+</div>
 
 
 <script>
     var genderCtx = document.getElementById('GenderChart').getContext('2d');
     var ageCtx = document.getElementById('AgeChart').getContext('2d');
     var emotionCtx = document.getElementById('EmotionChart').getContext('2d');
+    var timeCtx = document.getElementById('TimeChart').getContext('2d');
   
-    var genderData = <?php echo json_encode($genderData); ?>;
-    var ageData = <?php echo json_encode($ageData); ?>;
-    var emotionData = <?php echo json_encode($emotionData); ?>;
+    var genderData = <?php echo json_encode($chartDataGender); ?>;
+    var ageData = <?php echo json_encode($chartDataAge); ?>;
+    var emotionData = <?php echo json_encode($chartDataEmotions); ?>;
+    var timeData = <?php echo json_encode($chartDataTime); ?>;
     console.log(emotionData);
     var genderChart = new Chart(genderCtx, {
         type: 'pie',
@@ -106,6 +115,22 @@
                 // Customize chart options as needed
             },
         });
+
+        var timeChart = new Chart(timeCtx, {
+        type: 'bar',
+        data: {
+            labels: timeData.labels,
+            datasets: [{
+                label: 'Count',
+                data: timeData.datasets,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            // Customize chart options as needed
+        }
   
 </script>
 

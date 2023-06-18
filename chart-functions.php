@@ -1,6 +1,6 @@
 <?php
 
-    function fetchData($postId,$userID) {
+    function createJson($postId,$userID) {
         $mysql = new mysqli (
             'localhost', // locatia serverului (aici, masina locala)
             'asdf',       // numele de cont
@@ -75,6 +75,21 @@
                 }
             }
         }
+
+         //FOR TIME
+            $set_date = date('Y-m-d H:i:s', strtotime('2023-06-14 23:00:00'));
+
+            $queryTime = "SELECT (-1)*TIMESTAMPDIFF(MINUTE, date, CONCAT(DATE(date), ' 23:00:00')) AS time_difference FROM test_table WHERE id_post = 4;";
+            $resultTime = $mysql->query($queryTime);
+
+            $timeInterval = 60; //representing 60 minutes
+            $step = 5; //cat dureaza un interval
+            $intervals = [];
+
+            for($i = $step; $i <= $timeInterval; $i += $step){
+                $intervals[] =  $i;
+            }
+
         $chartDataGender = [
           ['Male', $maleCount],
           ['Female', $femaleCount]
@@ -90,6 +105,11 @@
         
         $chartDataEmotions = [
             'labels' => $emotions,
+            'datasets' => [],
+        ];
+
+        $chartDataTime = [
+            'labels' => [],
             'datasets' => [],
         ];
 
@@ -123,15 +143,31 @@
         $chartDataEmotions['datasets'][] = $dataset;
         }
 
+        while ($row = $resultTime->fetch_assoc()) {
+            $timeDifference = $row['time_difference'];
+            foreach ($intervals as $interval) {
+                if (intval($timeDifference) <= $interval && intval($timeDifference) > $interval - 5) {
+                    //var_dump($interval);
+                    if (!isset($chartDataTime['datasets'][$interval])) {
+                        $chartDataTime['datasets'][$interval] = 1;
+                    } else {
+                        $chartDataTime['datasets'][$interval]++;
+                    }
+                }
+            }
+        }
+
 
         $genderJson = json_encode($chartDataGender);
         $ageJson = json_encode($chartDataAge);
         $emotionJson = json_encode($chartDataEmotions);
+        $timeJson = json_encode($chartDataTime);
 
         $myfile = fopen($_SERVER['DOCUMENT_ROOT'].'/WebProject23/output/'.$postId.'_'.$userID.'.json', "w");
-        $content = $genderJson.'%%%'.$ageJson.'%%%'.$emotionJson;
+        $content = $genderJson.'%%%'.$ageJson.'%%%'.$emotionJson.'%%%'.$timeJson;
         fwrite($myfile,$content);
         fclose($myfile);
+
     }
 
     function buildChart($postID,$userID) {
@@ -139,11 +175,12 @@
 
         $str = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/WebProject23/output/'.$postID.'_'.$userID.'.json',true);
 
-        list($genderJson,$ageJson,$emotionJson) = explode("%%%",$str);
+        list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$str);
 
         $genderData = json_decode($genderJson);
         $ageData = json_decode($ageJson);
         $emotionData = json_decode($emotionJson);
+        $timeData = json_decode($timeJson);
 
         require 'chart-view.php';
     }
