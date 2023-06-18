@@ -2,7 +2,7 @@
 
     function createJson($postId,$userID) {
         $mysql = new mysqli (
-            'localhost', // locatia serverului (aici, masina locala)
+            '192.168.1.11', // locatia serverului (aici, masina locala)
             'asdf',       // numele de cont
             '123456',    // parola (atentie, in clar!)
             'web_project'   // baza de date
@@ -171,10 +171,7 @@
         return $content;
     }
 
-    function buildChart() {
-        $postID = $_GET['postID'];
-        $userID = $_GET['userID'];
-
+    function buildChart($postID,$userID) {
         $str = createJson($postID,$userID);//file_get_contents($_SERVER['DOCUMENT_ROOT'].'/ChartGenerationAPI/output/'.$postID.'_'.$userID.'.json',true);
 
         list($genderJson,$ageJson,$emotionJson,$timeJson) = explode("%%%",$str);
@@ -187,6 +184,8 @@
         require 'chart-view.php';
     }
 
+    $postID = $_GET['postID'];
+    $userID = $_GET['userID'];
 
     buildChart($postID,$userID);
 
