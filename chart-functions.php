@@ -189,4 +189,6 @@
 
 
     buildChart($postID,$userID);
+
+    echo "success_123";
 ?>
